@@ -39,8 +39,8 @@ window.addEventListener('onEventReceived', function (obj) {
         if (includeSubs) {
             if (event.amount === 'gift') {
                 onEvent('subscriber','Sub gift',event.name,delayTime);
-            } else {
-              	onEvent('subscriber',`Sub X${event.amount}`,event.name,delayTime);
+            } else if (!event.gifted) { //do not update on people who were gifted subscriptions
+              	onEvent('subscriber',`Sub x${event.amount}`,event.name,delayTime);
             }
 
         }//if
@@ -50,7 +50,7 @@ window.addEventListener('onEventReceived', function (obj) {
         }
     } else if (listener === 'cheer') {
         if (includeCheers && minCheer <= event.amount) {
-          	onEvent('cheer',`${event.amount.toLocaleString()} Bits`,event.name,delayTime);
+          	onEvent('cheer',`x${event.amount.toLocaleString()} Bits`,event.name,delayTime);
         }
     } else if (listener === 'tip') {
         if (includeTips && minTip <= event.amount) {
@@ -115,8 +115,8 @@ window.addEventListener('onWidgetLoad', function (obj) {//This block initializes
             if (!includeSubs) continue;
             if (event.amount === 'gift') {
               	onEvent('subscriber','Sub gift',event.name,2);
-            } else {
-             	onEvent('subscriber',`Sub X${event.amount}`,event.name,2);
+            } else if (!event.gifted) {
+             	onEvent('subscriber',`Sub x${event.amount}`,event.name,2);
             }
 
         } else if (event.type === 'host') {
@@ -125,7 +125,7 @@ window.addEventListener('onWidgetLoad', function (obj) {//This block initializes
             }
         } else if (event.type === 'cheer') {
             if (includeCheers && minCheer <= event.amount) {
-              	onEvent('cheer',`${event.amount.toLocaleString()} Bits`,event.name,2);
+              	onEvent('cheer',`x${event.amount.toLocaleString()} Bits`,event.name,2);
             }
         } else if (event.type === 'tip') {
             if (includeTips && minTip <= event.amount) {
@@ -449,7 +449,7 @@ let containers = {
   	eventLib = {
         'default': {color:'#FFFFFF'} ,
         'follower':{color:'#0270D9' , text:'Follower'} ,
-        'subscriber':{color:'#C1272D' , text:'Subsciber'} ,
+        'subscriber':{color:'#C1272D' , text:'Subscriber'} ,
         'tip': {color:'#FF6C00' , text:'Tip'} ,
         'cheer': {color:'#22EB3D' , text:'Cheer'} ,
         'redemption': {color:'#FFFFFF' , text:'Redeemed'} ,
@@ -481,7 +481,7 @@ function sortEvent(type,text,username,delayTime){
 //sort containers on left right top or bottom depending on what event occured
 //left gets sorted by follower,host, raid
 //right gets sorted by subscriber tipper cheer
-//doesn't omit events like cheer
+  
   let leftContainer = ['follower','host','raid']
       rightContainer = ['subscriber','tip','cheer','redemption'];
       color = eventLib['default'].color;
