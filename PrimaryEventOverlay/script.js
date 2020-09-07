@@ -39,7 +39,9 @@ window.addEventListener('onEventReceived', function (obj) {
         if (includeSubs) {
             if (event.amount === 'gift') {
                 onEvent('subscriber','Sub gift',event.name,delayTime);
-            } else if (!event.gifted) { //do not update on people who were gifted subscriptions
+            } else if(event.bulkGifted) {
+              	onEvent('subscriber',`Sub x${event.amount} gifts`,event.name,delayTime);
+        	} else if (!event.gifted) { //do not update on people who were gifted subscriptions
               	onEvent('subscriber',`Sub x${event.amount}`,event.name,delayTime);
             }
 
@@ -115,6 +117,8 @@ window.addEventListener('onWidgetLoad', function (obj) {//This block initializes
             if (!includeSubs) continue;
             if (event.amount === 'gift') {
               	onEvent('subscriber','Sub gift',event.name,2);
+            } else if(event.bulkGifted) {
+              	onEvent('subscriber',`Sub x${event.amount} gifts`,event.name,delayTime);
             } else if (!event.gifted) {
              	onEvent('subscriber',`Sub x${event.amount}`,event.name,2);
             }
