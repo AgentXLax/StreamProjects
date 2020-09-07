@@ -12,8 +12,7 @@ let eventsLimit = 5,
     includeCheers = true,
     direction = "top",
     textOrder = "nameFirst",
-    minCheer = 0,
-	delayTime = 8;
+    minCheer = 0;
 
 let userCurrency,
     totalEvents = 0;
@@ -150,77 +149,6 @@ window.addEventListener('onWidgetLoad', function (obj) {//This block initializes
         }
     }
 });
-
-
-function addEvent(type, text, username) {
-    totalEvents += 1;
-    let element;
-    if (textOrder === "actionFirst") {
-        element = `
-    <div class="event-container" id="event-${totalEvents}">
-		<div class="backgroundsvg"></div>
-        <div class="event-image event-${type}"></div>
-        <div class="username-container">${text}</div>
-       <div class="details-container">${username}</div>
-    </div>`;
-    } else {
-        element = `
-    <div class="event-container" id="event-${totalEvents}">
-		<div class="backgroundsvg"></div>
-        <div class="event-image event-${type}"></div>
-        <div class="username-container">${username}</div>
-       <div class="details-container">${text}</div>
-    </div>`;
-    }
-    if (direction === "bottom") {
-        $('.main-container').removeClass("fadeOutClass").show().append(element);
-    } else {
-        $('.main-container').removeClass("fadeOutClass").show().prepend(element);
-    }
-    if (fadeoutTime !== 999) {
-        $('.main-container').addClass("fadeOutClass");
-    }
-    if (totalEvents > eventsLimit) {
-        removeEvent(totalEvents - eventsLimit);
-    }
-}
-
-function removeEvent(eventId) {
-    $(`#event-${eventId}`).animate({
-        height: 0,
-        opacity: 0
-    }, 'slow', function () {
-        $(`#event-${eventId}`).remove();
-    });
-}
-
-let glowStyle = $("#glow");
-
-
-
-function setTransition(color,fillTime,scaleSize,scaleTime) {
-  glowStyle.css(
-    {
-      "fill": color ,
-      "transform": `scale(${scaleSize})` ,
-      "transition": `fill ${fillTime}s , transform ${scaleTime}s`
-    }
-  );
-}
-
-$(".glow-layer-goose").on('transitionend', function() {
-  setTransition(eventColors.default,30,1,5);
-});//reset the glowing animation back to normal
-
-//follow, host, raid goes to the left
-//sub, tip, cheer goes to the right
-//emote gets recognized but not added
-
-//most recent pops in the bottom
-//Event name pops in at the top
-
-
-
 
 /**
  * @name		Shuffle Letters
@@ -513,22 +441,41 @@ $(".glow-layer-goose").on('transitionend', function() {
 })(jQuery);
 
 let containers = {
-  left : $("#follower-container") ,
-  right : $("#train-container") ,
-  top : $("#header") ,
-  bottom : $("#footer")
-};
+        left : $("#follower-container") ,
+        right : $("#train-container") ,
+        top : $("#header") ,
+        bottom : $("#footer")
+      } ,
+  	eventLib = {
+        'default': {color:'#FFFFFF'} ,
+        'follower':{color:'#0270D9' , text:'Follower'} ,
+        'subscriber':{color:'#C1272D' , text:'Subsciber'} ,
+        'tip': {color:'#FF6C00' , text:'Tip'} ,
+        'cheer': {color:'#22EB3D' , text:'Cheer'} ,
+        'redemption': {color:'#FFFFFF' , text:'Redeemed'} ,
+        'host': {color:'#FCED21' , text:'Host'} ,
+        'raid': {color:'#BC48D9' , text:'Raid'}
+      } ,
+	glowStyle = $("#glow");
 
 containers.left.shuffleLetters();
 containers.right.shuffleLetters();
 containers.top.shuffleLetters();
 containers.bottom.shuffleLetters();
 
-function onEvent(type, text, username, delayTime) {
-  let color;
-  color = sortEvent(type,text,username, delayTime);
-  setTransition(color,0.5,1.5,0.5);
+function setTransition(color,fillTime,scaleSize,scaleTime) {
+  glowStyle.css(
+    {
+      "fill": color ,
+      "transform": `scale(${scaleSize})` ,
+      "transition": `fill ${fillTime}s , transform ${scaleTime}s`
+    }
+  );
 }
+
+$(".glow-layer-goose").on('transitionend', function() {
+  setTransition(eventLib['default'].color,30,1,5);
+});//reset the glowing animation back to normal
 
 function sortEvent(type,text,username,delayTime){
 //sort containers on left right top or bottom depending on what event occured
@@ -537,21 +484,11 @@ function sortEvent(type,text,username,delayTime){
 //doesn't omit events like cheer
   let leftContainer = ['follower','host','raid']
       rightContainer = ['subscriber','tip','cheer','redemption'];
-      eventColors = {
-        'default': '#FFFFFF' ,
-        'follower':'#0270D9' ,
-        'subscriber': '#C1272D' ,
-        'tip': '#FF6C00' ,
-        'cheer': '#22EB3D' ,
-        'redemption': '#FFFFFF',
-        'host': '#FCED21' ,
-        'raid': '#BC48D9'
-      }
-      color = eventColors.default;
+      color = eventLib['default'].color;
 
-      containers.top.shuffleLetters({"text":type});
+      containers.top.shuffleLetters({"text":eventLib[type].text});
       containers.bottom.shuffleLetters({"text":`${username} • ${text}`});
-      color = eventColors[type];
+      color = eventLib[type].color;
 
   if(leftContainer.includes(type)){
     setTimeout(function (){
@@ -576,4 +513,10 @@ function sortEvent(type,text,username,delayTime){
     },delayTime*1000);
     return color;
   }
+}
+
+function onEvent(type, text, username, delayTime) {
+  let color;
+  color = sortEvent(type,text,username, delayTime);
+  setTransition(color,0.5,1.5,0.5);
 }
