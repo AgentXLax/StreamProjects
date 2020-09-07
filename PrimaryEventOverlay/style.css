@@ -1,5 +1,5 @@
 * {
-  	font-family: Bahnschrift;
+    font-family: {{fontFamily}};
     color: {{fontColor}};
     font-size: 14px;
    	text-shadow: 2px 1px 3px #ffffff;
@@ -8,8 +8,12 @@
 .main-container {
   display: grid;
   justify-content: stretch;
-  grid-template-columns: 3fr 300px 3fr;
-  grid-template-rows: 42px 1.5fr 1fr;
+  grid-template-areas:
+  "header header header"
+  "left center right"
+  "footer footer footer" ;
+  grid-template-columns: 2fr 200px 2fr;
+  grid-template-rows: 42px 1fr 1fr;
 }
 
 .header-text {
@@ -17,8 +21,7 @@
   align-self: center;
   color: {{headerColor}};
   font-size: {{headerFontSize}}px;
-  grid-column: 2;
-  grid-row: 1;
+  grid-area: header;
 }
 
 .footer-text{
@@ -26,8 +29,7 @@
   align-self: start;
   color: {{footerColor}};
   font-size: {{footerFontSize}}px;
-  grid-column: 2;
-  grid-row: 3;
+  grid-area: footer;
 }
 
 .follower-container, .train-container {
@@ -37,19 +39,16 @@
 
 .follower-container {
   text-align: right;
-  grid-column: 1;
-  grid-row: 2;
+  grid-area: left;
 }
 
 .train-container {
   text-align: left;
-  grid-column: 3;
-  grid-row: 2;
+  grid-area: right;
 }
 
 .goose-container {
-  grid-column: 2;
-  grid-row: 2;
+  grid-area: center;
   display: grid;
 }
 
