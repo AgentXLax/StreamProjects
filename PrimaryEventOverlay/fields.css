@@ -87,50 +87,48 @@
     "label": "Minimum amount of bits in Cheer:",
     "value": 1
   },
-  
+ 
+  "fontFamily": {
+  	"type":"text",
+    "label":"Type the name of a font you would like to use",
+    "value":"Bahnschrift"
+  },
   "gooseColor": {
     "type": "colorpicker",
     "label": "Goose primary color",
     "value": "#FFFFFF"
   },
-  
   "fontColor": {
     "type": "colorpicker",
     "label": "Font color",
     "value": "#FFFFFF"
   },
-
   "fontSize": {
     "type": "number",
     "label": "Side Text Font Size",
     "value": 18
   },
-  
   "headerColor": {
     "type": "colorpicker",
     "label": "Header font color",
     "value": "#FFFFFF"
   },
-
   "headerFontSize": {
     "type": "number",
     "label": "Header font size",
     "value": 42
   },
-  
   "footerColor": {
     "type": "colorpicker",
     "label": "Footer font color",
     "value": "#FFFFFF"
   },
-
   "footerFontSize": {
     "type": "number",
     "label": "Footer font size",
     "value": 36
   },
 
-  
   "locale": {
     "type": "dropdown",
     "label": "Locale",
