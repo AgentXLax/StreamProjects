@@ -36,19 +36,15 @@ window.addEventListener('onEventReceived', function (obj) {
           	onEvent('redemption','Redeemed',event.name,delayTime);
         }
     } else if (listener === 'subscriber') {
+      console.log(event);
         if (includeSubs) {
             if (event.amount === 'gift') {
                 onEvent('subscriber','Sub gift',event.name,delayTime);
-            } else if(event.bulkGifted) {
-              	onEvent('subscriber',`Sub x${event.amount} gifts`,event.name,delayTime);
-        	} else if (!event.gifted) { //do not update on people who were gifted subscriptions
+            } else if(event.bulkGifted || (!event.isCommunityGift && event.gifted)) {
+              onEvent('subscriber',`Sub x${event.amount} gifts`,event.sender,delayTime);
+        	} else if (!event.isCommunityGift) { //do not update on people who were gifted subscriptions
               	onEvent('subscriber',`Sub x${event.amount}`,event.name,delayTime);
             }
-
-        }//if
-    } else if (listener === 'host') {
-        if (includeHosts && minHost <= event.amount) {
-          	onEvent('host',`Host ${event.amount.toLocaleString()}`,event.name,delayTime);
         }
     } else if (listener === 'cheer') {
         if (includeCheers && minCheer <= event.amount) {
@@ -79,7 +75,7 @@ window.addEventListener('onEventReceived', function (obj) {
 window.addEventListener('onWidgetLoad', function (obj) {//This block initializes fields set by user. Data is collected above first then it is initialized.
     let recents = obj.detail.recents;
     recents.sort(function (a, b) {
-        return Date.parse(a.createdAt) - Date.parse(b.createdAt);
+        return -(Date.parse(a.createdAt) - Date.parse(b.createdAt));
     });
     userCurrency = obj.detail.currency;
     const fieldData = obj.detail.fieldData;
@@ -117,16 +113,12 @@ window.addEventListener('onWidgetLoad', function (obj) {//This block initializes
             if (!includeSubs) continue;
             if (event.amount === 'gift') {
               	onEvent('subscriber','Sub gift',event.name,2);
-            } else if(event.bulkGifted) {
-              	onEvent('subscriber',`Sub x${event.amount} gifts`,event.name,delayTime);
-            } else if (!event.gifted) {
+            } else if(event.bulkGifted || (!event.isCommunityGift && event.gifted)) {
+              	onEvent('subscriber',`Sub x${event.amount} gifts`,event.sender,2);
+            } else if (!event.isCommunitygift) {
              	onEvent('subscriber',`Sub x${event.amount}`,event.name,2);
             }
 
-        } else if (event.type === 'host') {
-            if (includeHosts && minHost <= event.amount) {
-              	onEvent('host',`Host ${event.amount.toLocaleString()}`,event.name,2);
-            }
         } else if (event.type === 'cheer') {
             if (includeCheers && minCheer <= event.amount) {
               	onEvent('cheer',`x${event.amount.toLocaleString()} Bits`,event.name,2);
