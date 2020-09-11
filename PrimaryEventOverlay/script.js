@@ -17,7 +17,29 @@ let eventsLimit = 5,
 let userCurrency,
     totalEvents = 0;
 
+let glowStyle = $("#glow") ,
+
+	containers = {
+        left : $("#follower-container") ,
+        right : $("#train-container") ,
+        top : $("#header") ,
+        bottom : $("#footer")
+      } ,
+  	eventLib = {
+        'default': {color:'#FFFFFF'} ,
+        'follower':{color:'#0270D9' , text:'Follower'} ,
+        'subscriber':{color:'#C1272D' , text:'Subscriber'} ,
+        'tip': {color:'#FF6C00' , text:'Tip'} ,
+        'cheer': {color:'#22EB3D' , text:'Cheer'} ,
+        'redemption': {color:'#FFFFFF' , text:'Redeemed'} ,
+        'host': {color:'#FCED21' , text:'Host'} ,
+        'raid': {color:'#BC48D9' , text:'Raid'}
+      };
+	
+
 window.addEventListener('onEventReceived', function (obj) {
+  let defaultGlow = obj.detail.fieldData.defaultGlow;
+  eventLib['default'].color = defaultGlow;
     if (!obj.detail.event) {
       return;
     }
@@ -96,6 +118,13 @@ window.addEventListener('onWidgetLoad', function (obj) {//This block initializes
     textOrder = fieldData.textOrder;
     fadeoutTime = fieldData.fadeoutTime;
   	delayTime = fieldData.delayTime;
+    defaultGlow = fieldData.defaultGlow;
+  	
+  	console.log(defaultGlow);
+  
+ 	eventLib['default'].color = defaultGlow;
+  
+  	console.log(eventLib);
 
     let eventIndex;//for loop that creates event list items
     for (eventIndex = 0; eventIndex < recents.length; eventIndex++) {
@@ -435,24 +464,6 @@ window.addEventListener('onWidgetLoad', function (obj) {//This block initializes
 	}
 
 })(jQuery);
-
-let containers = {
-        left : $("#follower-container") ,
-        right : $("#train-container") ,
-        top : $("#header") ,
-        bottom : $("#footer")
-      } ,
-  	eventLib = {
-        'default': {color:'#FFFFFF'} ,
-        'follower':{color:'#0270D9' , text:'Follower'} ,
-        'subscriber':{color:'#C1272D' , text:'Subscriber'} ,
-        'tip': {color:'#FF6C00' , text:'Tip'} ,
-        'cheer': {color:'#22EB3D' , text:'Cheer'} ,
-        'redemption': {color:'#FFFFFF' , text:'Redeemed'} ,
-        'host': {color:'#FCED21' , text:'Host'} ,
-        'raid': {color:'#BC48D9' , text:'Raid'}
-      } ,
-	glowStyle = $("#glow");
 
 containers.left.shuffleLetters();
 containers.right.shuffleLetters();
