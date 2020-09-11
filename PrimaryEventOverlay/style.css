@@ -2,7 +2,8 @@
     font-family: {{fontFamily}};
     color: {{fontColor}};
     font-size: 14px;
-   	text-shadow: 2px 1px 3px #ffffff;
+   	/*text-shadow: 2px 1px 3px #ffffff;*/
+    text-shadow: -1px 0 #ffffff, 0 1px #ffffff, 1px 0 #ffffff, 0 -1px #ffffff;
 }
 
 .main-container {
@@ -52,14 +53,15 @@
   display: grid;
 }
 
-svg.top-layer-goose {
+.top-layer-goose {
   fill: {{gooseColor}};
   grid-column: 1;
   grid-row: 1;
   z-index:2;
+  animation: color-flow 30s infinite alternate;
 }
 
-svg.glow-layer-goose {
+.glow-layer-goose {
   fill: #ffffff;
   grid-column: 1;
   grid-row: 1;
@@ -68,4 +70,9 @@ svg.glow-layer-goose {
   opacity:1;
   transform:scale(1);
   transition: fill 0s, width: 0s;
+}
+
+@keyframes color-flow {
+  0% {fill:{{gooseColor}}}
+  100% {fill:{{gooseAnimColor}}}
 }
