@@ -37,9 +37,7 @@ let glowStyle = $("#glow") ,
       };
 	
 
-window.addEventListener('onEventReceived', function (obj) {
-  let defaultGlow = obj.detail.fieldData.defaultGlow;
-  eventLib['default'].color = defaultGlow;
+$(this).on('onEventReceived', function (obj) {
     if (!obj.detail.event) {
       return;
     }
@@ -94,7 +92,7 @@ window.addEventListener('onEventReceived', function (obj) {
     }
 });
 
-window.addEventListener('onWidgetLoad', function (obj) {//This block initializes fields set by user. Data is collected above first then it is initialized.
+$(this).on('onWidgetLoad', function (obj) {//This block initializes fields set by user. Data is collected above first then it is initialized.
     let recents = obj.detail.recents;
     recents.sort(function (a, b) {
         return -(Date.parse(a.createdAt) - Date.parse(b.createdAt));
