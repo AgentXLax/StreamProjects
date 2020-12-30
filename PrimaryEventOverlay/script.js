@@ -27,8 +27,8 @@ let glowStyle = $("#glow") ,
       } ,
   	eventLib = {
         'default': {color:'#FFFFFF'} ,
-        'follower':{color:'#0270D9' , text:'Follower'} ,
-        'subscriber':{color:'#C1272D' , text:'Subscriber'} ,
+        'follower': {color:'#0270D9' , text:'Follower'} ,
+        'subscriber': {color:'#C1272D' , text:'Subscriber'} ,
         'tip': {color:'#FF6C00' , text:'Tip'} ,
         'cheer': {color:'#22EB3D' , text:'Cheer'} ,
         'redemption': {color:'#FFFFFF' , text:'Redeemed'} ,
@@ -37,7 +37,7 @@ let glowStyle = $("#glow") ,
       };
 	
 
-$(this).on('onEventReceived', function (obj) {
+$(this).on('onEventReceived', function (obj) { //Event Listener on received event
     if (!obj.detail.event) {
       return;
     }
@@ -64,11 +64,13 @@ $(this).on('onEventReceived', function (obj) {
               onEvent('subscriber',`Sub x${event.amount} gifts`,event.sender,delayTime);
         	} else if (!event.isCommunityGift) { //do not update on people who were gifted subscriptions
               	onEvent('subscriber',`Sub x${event.amount}`,event.name,delayTime);
-            }
+            } else if (event.amount === undefined) {
+            	onEvent('subscriber',`Resub`,event.name,delayTime);
+            } //No else statement because that will cover bulk gifts and make a long loop
         }
     } else if (listener === 'cheer') {
         if (includeCheers && minCheer <= event.amount) {
-          	onEvent('cheer',`x${event.amount.toLocaleString()} Bits`,event.name,delayTime);
+          	onEvent('cheer',`x${event.amount.toLocaleString()} Bits`,event.name,delayTime,event.amount);
         }
     } else if (listener === 'tip') {
         if (includeTips && minTip <= event.amount) {
@@ -95,7 +97,7 @@ $(this).on('onEventReceived', function (obj) {
 $(this).on('onWidgetLoad', function (obj) {//This block initializes fields set by user. Data is collected above first then it is initialized.
     let recents = obj.detail.recents;
     recents.sort(function (a, b) {
-        return -(Date.parse(a.createdAt) - Date.parse(b.createdAt));
+        return - (Date.parse(a.createdAt) - Date.parse(b.createdAt));
     });
     userCurrency = obj.detail.currency;
     const fieldData = obj.detail.fieldData;
@@ -144,11 +146,13 @@ $(this).on('onWidgetLoad', function (obj) {//This block initializes fields set b
               	onEvent('subscriber',`Sub x${event.amount} gifts`,event.sender,2);
             } else if (!event.isCommunitygift) {
              	onEvent('subscriber',`Sub x${event.amount}`,event.name,2);
+            } else if (event.amount === undefined) {
+            	onEvent('subscriber',`Resub`,event.name,delayTime);
             }
 
         } else if (event.type === 'cheer') {
             if (includeCheers && minCheer <= event.amount) {
-              	onEvent('cheer',`x${event.amount.toLocaleString()} Bits`,event.name,2);
+              	onEvent('cheer',`x${event.amount.toLocaleString()} Bits`,event.name,2,event.amount);
             }
         } else if (event.type === 'tip') {
             if (includeTips && minTip <= event.amount) {
@@ -482,20 +486,20 @@ $(".glow-layer-goose").on('transitionend', function() {
   setTransition(eventLib['default'].color,30,1,5);
 });//reset the glowing animation back to normal
 
-function sortEvent(type,text,username,delayTime){
+function sortEvent(type,text,username,delayTime, cheerAmount){
 //sort containers on left right top or bottom depending on what event occured
 //left gets sorted by follower,host, raid
 //right gets sorted by subscriber tipper cheer
   
-  let leftContainer = ['follower','host','raid']
-      rightContainer = ['subscriber','tip','cheer','redemption'];
+  let leftContainer = ['follower','host','raid'], //add cheer as a threshold under 50 bits
+      rightContainer = ['subscriber','tip','cheer','redemption']; //add cheer as threshold over 50 bits
       color = eventLib['default'].color;
 
       containers.top.shuffleLetters({"text":eventLib[type].text});
       containers.bottom.shuffleLetters({"text":`${username} • ${text}`});
       color = eventLib[type].color;
 
-  if(leftContainer.includes(type)){
+  if(leftContainer.includes(type) || (rightContainer.includes(type) && cheerAmount < 50)){
     setTimeout(function (){
       containers.left.shuffleDelete();
       containers.top.shuffleDelete();
@@ -507,7 +511,7 @@ function sortEvent(type,text,username,delayTime){
     return color;
   }
 
-  if (rightContainer.includes(type)) {
+  if (rightContainer.includes(type) || (rightContainer.includes(type) && cheerAmount >= 50)) {
     setTimeout(function (){
       containers.right.shuffleDelete();
       containers.top.shuffleDelete()
@@ -520,8 +524,8 @@ function sortEvent(type,text,username,delayTime){
   }
 }
 
-function onEvent(type, text, username, delayTime) {
+function onEvent(type, text, username, delayTime, cheerAmount) { //cheerAmount will be passed as an arg (if it exists)
   let color;
-  color = sortEvent(type,text,username, delayTime);
+  color = sortEvent(type,text,username, delayTime, cheerAmount);
   setTransition(color,0.5,1.5,0.5);
 }
