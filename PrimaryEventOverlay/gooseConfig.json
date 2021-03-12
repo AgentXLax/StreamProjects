@@ -1,0 +1,130 @@
+{
+    "game": [
+        {
+            "name": "Breath of the Wild", 
+            "primary": "#fbf7dc", 
+            "primaryAnim": "#ffff65", 
+            "defaultGlow": "#ff0000", 
+            "fontColor": "#5d649d", 
+            "font": "Triforce", 
+            "fontBorderColor": "#ffffff"
+        }, 
+        {
+            "name": "Control", 
+            "primary": "#6f092e", 
+            "primaryAnim": "#9e262f", 
+            "defaultGlow": "#311f2b", 
+            "fontColor": "#ffffff", 
+            "font": "Avant Garde Gothic Std", 
+            "fontBorderColor": "#311f2b"
+        }, 
+        {
+            "name": "Fall Guys", 
+            "primary": "#d900d3", 
+            "primaryAnim": "#ff76f7", 
+            "defaultGlow": "#ffd400", 
+            "fontColor": "#00cee9", 
+            "font": "Impact", 
+            "fontBorderColor": "#ffffff"
+        }, 
+        {
+            "name": "State of Decay 2", 
+            "primary": "#c67200", 
+            "primaryAnim": "#f6ae4a", 
+            "defaultGlow": "#faf2e7", 
+            "fontColor": "#352f33", 
+            "font": "ChunkFive", 
+            "fontBorderColor": "#ffffff"
+        }, 
+        {
+            "name": "Battle for Bikini Bottom", 
+            "primary": "#f7e672", 
+            "primaryAnim": "#f1db47", 
+            "defaultGlow": "#0bb6ec", 
+            "fontColor": "#ffffff", 
+            "font": "Spongeboy Me Bob", 
+            "fontBorderColor": "#275199"
+        }, 
+        {
+            "name": "Minecraft", 
+            "primary": "#6ff77a", 
+            "primaryAnim": "#ffffff", 
+            "defaultGlow": "#000000", 
+            "fontColor": "#f8e72c", 
+            "font": "Minecraft", 
+            "fontBorderColor": "#6b6a00"
+        }, 
+        {
+            "name": "SOMA", 
+            "primary": "#4cd8cc", 
+            "primaryAnim": "#52fff1", 
+            "defaultGlow": "#c22619", 
+            "fontColor": "#cdfefa", 
+            "font": "Rubik Mono One", 
+            "fontBorderColor": "#c22619"
+        }, 
+        {
+            "name": "Amnesia", 
+            "primary": "#e2986b", 
+            "primaryAnim": "#cecdcd", 
+            "defaultGlow": "#000000", 
+            "fontColor": "#ffffff", 
+            "font": "AmnesiaRip", 
+            "fontBorderColor": "#000000"
+        }, 
+        {
+            "name": "Among Us", 
+            "primary": "#c40000", 
+            "primaryAnim": "#e35454", 
+            "defaultGlow": "#000955", 
+            "fontColor": "#ffffff", 
+            "font": "Finger Paint", 
+            "fontBorderColor": "#000000"
+        }, 
+        {
+            "name": "Rocket League", 
+            "primary": "#0091e4", 
+            "primaryAnim": "#0059b1", 
+            "defaultGlow": "#ff7c2e", 
+            "fontColor": "#ffffff", 
+            "font": "Archivo Black", 
+            "fontBorderColor": "#000000"
+        }, 
+        {
+            "name": "Phasmophobia", 
+            "primary": "rgb(112,128,144,0.86)", 
+            "primaryAnim": "rgb(137,139,141,0.86)", 
+            "defaultGlow": "#acf3ff", 
+            "fontColor": "#ffffff", 
+            "font": "Chiller", 
+            "fontBorderColor": "#000000"
+        }, 
+        {
+            "name": "Changed", 
+            "primary": "#000000", 
+            "primaryAnim": "#363636", 
+            "defaultGlow": "#66e6ff", 
+            "fontColor": "#ffffff", 
+            "font": "Knewave", 
+            "fontBorderColor": "#3a3a3a"
+        }, 
+        {
+            "name": "Helltaker", 
+            "primary": "#a43134", 
+            "primaryAnim": "#c33b3f", 
+            "defaultGlow": "#ffffff", 
+            "fontColor": "#ffffff", 
+            "font": "Bungee", 
+            "fontBorderColor": "#000000"
+        }, 
+        {
+            "name": "Baba Is You", 
+            "primary": "#dc3a6b", 
+            "primaryAnim": "#f24f80", 
+            "defaultGlow": "#ffffff", 
+            "fontColor": "#ffffff", 
+            "font": "Barrio", 
+            "fontBorderColor": "#8c2745"
+        }
+    ]
+}
