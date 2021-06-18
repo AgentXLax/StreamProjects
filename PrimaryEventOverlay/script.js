@@ -1,181 +1,28 @@
-let eventsLimit = 5,
-    userLocale = "en-US",
-    includeFollowers = true,
-    includeRedemptions = true,
-    includeHosts = true,
-    minHost = 0,
-    includeRaids = true,
-    minRaid = 0,
-    includeSubs = true,
-    includeTips = true,
-    minTip = 0,
-    includeCheers = true,
-    direction = "top",
-    textOrder = "nameFirst",
-    minCheer = 0;
-
-let userCurrency,
-    totalEvents = 0;
-
-let glowStyle = $("#glow") ,
-
-	containers = {
+let userLocale = 'en-US',
+    userCurrency,
+    textOrder = 'nameFirst',
+    glowStyle = $('#glow'),
+    containers = {
         left : $("#follower-container") ,
         right : $("#train-container") ,
         top : $("#header") ,
         bottom : $("#footer")
-      } ,
-  	eventLib = {
+    } ,
+    eventLib = {
         'default': {color:'#FFFFFF'} ,
-        'follower':{color:'#0270D9' , text:'Follower'} ,
-        'subscriber':{color:'#C1272D' , text:'Subscriber'} ,
+        'follower': {color:'#0270D9' , text:'Follower'} ,
+        'subscriber': {color:'#C1272D' , text:'Subscriber'} ,
         'tip': {color:'#FF6C00' , text:'Tip'} ,
         'cheer': {color:'#22EB3D' , text:'Cheer'} ,
         'redemption': {color:'#FFFFFF' , text:'Redeemed'} ,
         'host': {color:'#FCED21' , text:'Host'} ,
         'raid': {color:'#BC48D9' , text:'Raid'}
-      };
+    };
 	
-
-$(this).on('onEventReceived', function (obj) {
-    if (!obj.detail.event) {
-      return;
-    }
-    if (typeof obj.detail.event.itemId !== "undefined") {
-        obj.detail.listener = "redemption-latest"
-    }
-    const listener = obj.detail.listener.split("-")[0];//string array separated by '-' likely goes 'follower-xxxxxxxxx'
-    const event = obj.detail.event;//likely an object datatype
-
-    if (listener === 'follower') {
-        if (includeFollowers) {
-          	onEvent('follower','Follower',event.name,delayTime);
-        }
-    } else if (listener === 'redemption') {
-        if (includeRedemptions) {
-          	onEvent('redemption','Redeemed',event.name,delayTime);
-        }
-    } else if (listener === 'subscriber') {
-      console.log(event);
-        if (includeSubs) {
-            if (event.amount === 'gift') {
-                onEvent('subscriber','Sub gift',event.name,delayTime);
-            } else if(event.bulkGifted || (!event.isCommunityGift && event.gifted)) {
-              onEvent('subscriber',`Sub x${event.amount} gifts`,event.sender,delayTime);
-        	} else if (!event.isCommunityGift) { //do not update on people who were gifted subscriptions
-              	onEvent('subscriber',`Sub x${event.amount}`,event.name,delayTime);
-            }
-        }
-    } else if (listener === 'cheer') {
-        if (includeCheers && minCheer <= event.amount) {
-          	onEvent('cheer',`x${event.amount.toLocaleString()} Bits`,event.name,delayTime);
-        }
-    } else if (listener === 'tip') {
-        if (includeTips && minTip <= event.amount) {
-            if (event.amount === parseInt(event.amount)) {
-              onEvent('tip', event.amount.toLocaleString(userLocale, {
-                    style: 'currency',
-                    minimumFractionDigits: 0,
-                    currency: userCurrency.code
-                }), event.name,delayTime);
-            } else {
-              onEvent('tip', event.amount.toLocaleString(userLocale, {
-                    style: 'currency',
-                    currency: userCurrency.code
-                }), event.name,delayTime);
-            }
-        }
-    } else if (listener === 'raid') {
-        if (includeRaids && minRaid <= event.amount) {
-           	onEvent('raid', `Raid ${event.amount.toLocaleString()}`, event.name,delayTime);
-        }
-    }
-});
-
-$(this).on('onWidgetLoad', function (obj) {//This block initializes fields set by user. Data is collected above first then it is initialized.
-    let recents = obj.detail.recents;
-    recents.sort(function (a, b) {
-        return -(Date.parse(a.createdAt) - Date.parse(b.createdAt));
-    });
-    userCurrency = obj.detail.currency;
-    const fieldData = obj.detail.fieldData;
-    eventsLimit = fieldData.eventsLimit;
-    includeFollowers = (fieldData.includeFollowers === "yes");
-    includeRedemptions = (fieldData.includeRedemptions === "yes");
-    includeHosts = (fieldData.includeHosts === "yes");
-    minHost = fieldData.minHost;
-    includeRaids = (fieldData.includeRaids === "yes");
-    minRaid = fieldData.minRaid;
-    includeSubs = (fieldData.includeSubs === "yes");
-    includeTips = (fieldData.includeTips === "yes");
-    minTip = fieldData.minTip;
-    includeCheers = (fieldData.includeCheers === "yes");
-    minCheer = fieldData.minCheer;
-    direction = fieldData.direction;
-    userLocale = fieldData.locale;
-    textOrder = fieldData.textOrder;
-    fadeoutTime = fieldData.fadeoutTime;
-  	delayTime = fieldData.delayTime;
-    defaultGlow = fieldData.defaultGlow;
-  	
-  	console.log(defaultGlow);
-  
- 	eventLib['default'].color = defaultGlow;
-  
-  	console.log(eventLib);
-
-    let eventIndex;//for loop that creates event list items
-    for (eventIndex = 0; eventIndex < recents.length; eventIndex++) {
-        const event = recents[eventIndex];
-
-        if (event.type === 'follower') {
-            if (includeFollowers) {
-              	onEvent('follower','Follower',event.name,2);
-            }
-        } else if (event.type === 'redemption') {
-            if (includeRedemptions) {
-              	onEvent('redemption','Redeemed',event.name,2);
-            }
-        } else if (event.type === 'subscriber') {
-            if (!includeSubs) continue;
-            if (event.amount === 'gift') {
-              	onEvent('subscriber','Sub gift',event.name,2);
-            } else if(event.bulkGifted || (!event.isCommunityGift && event.gifted)) {
-              	onEvent('subscriber',`Sub x${event.amount} gifts`,event.sender,2);
-            } else if (!event.isCommunitygift) {
-             	onEvent('subscriber',`Sub x${event.amount}`,event.name,2);
-            }
-
-        } else if (event.type === 'cheer') {
-            if (includeCheers && minCheer <= event.amount) {
-              	onEvent('cheer',`x${event.amount.toLocaleString()} Bits`,event.name,2);
-            }
-        } else if (event.type === 'tip') {
-            if (includeTips && minTip <= event.amount) {
-                if (event.amount === parseInt(event.amount)) {
-                    onEvent('tip', event.amount.toLocaleString(userLocale, {
-                      style: 'currency',
-                      minimumFractionDigits: 0,
-                      currency: userCurrency.code
-                  	}), event.name,2);
-                } else {
-                    onEvent('tip', event.amount.toLocaleString(userLocale, {
-                        style: 'currency',
-                        currency: userCurrency.code
-                    }), event.name,2);
-                }
-            }
-        } else if (event.type === 'raid') {
-            if (includeRaids && minRaid <= event.amount) {
-                onEvent('raid', `Raid ${event.amount.toLocaleString()}`, event.name,2);
-            }
-        }
-    }
-});
 
 /**
  * @name		Shuffle Letters
- * @author		Martin Angelov
+ * @author		Martin Angelov (modified by Nathan Wisla)
  * @version 	1.0
  * @url			http://tutorialzine.com/2011/09/shuffle-letters-effect-jquery/
  * @license		MIT License
@@ -183,71 +30,119 @@ $(this).on('onWidgetLoad', function (obj) {//This block initializes fields set b
 
 (function($){
 
-	$.fn.shuffleLetters = function(prop){
+    $.fn.shuffleLetters = function(prop){
 
-		var options = $.extend({
-			"step"		: 8,			// How many times should the letters be changed
-			"fps"		: 25,			// Frames Per Second
-			"text"		: "", 			// Use this text instead of the contents
-			"callback"	: function(){}	// Run once the animation is complete
-		},prop)
+        var options = $.extend({
+            "step"		: 8,			// How many times should the letters be changed
+            "fps"		: 25,			// Frames Per Second
+            "text"		: "", 			// Use this text instead of the contents
+            "callback"	: function(){}	// Run once the animation is complete
+        },prop);
 
-		return this.each(function(){
-
-			var el = $(this),
-				str = "";
-
-
-			// Preventing parallel animations using a flag;
-
-			if(el.data('animated')){
-				return true;
-			}
-
-			el.data('animated',true);
+        return this.each(function () {
+            let el = $(this),
+                str = "",
+                fwd;
 
 
-			if(options.text) {
-				str = options.text.split('');
-			}
-			else {
-				str = el.text().split('');
-			}
+            // Preventing parallel animations using a flag;
 
-			// The types array holds the type for each character;
-			// Letters holds the positions of non-space characters;
+            if (el.data('animated')) {
+                return true;
+            }
 
-			var types = [],
-				letters = [];
+            el.data('animated', true);
 
-			// Looping through all the chars of the string
+			console.log(' text',options.text, options.text === ' ');
+          
+            if (options.text !== '') {
+                fwd = true;
+                str = options.text.split('');
+            } else {
+                fwd = false;
+                str = el.text().split('');
+            }
 
-			for(var i=0;i<str.length;i++){
+            // The types array holds the type for each character;
+            // Letters holds the positions of non-space characters;
 
-				var ch = str[i];
+            var types = [],
+                letters = [];
 
-				if(ch == " "){
-					types[i] = "space";
-					continue;
-				}
-				else if(/[a-z]/.test(ch)){
-					types[i] = "lowerLetter";
-				}
-				else if(/[A-Z]/.test(ch)){
-					types[i] = "upperLetter";
-				}
-				else {
-					types[i] = "symbol";
-				}
+            // Looping through all the chars of the string
 
-				letters.push(i);
-			}
+            for (var i = 0; i < str.length; i++) {
 
-			el.html("");
+                var ch = str[i];
 
-			// Self executing named function expression:
+                if (ch == " ") {
+                    types[i] = "space";
+                    continue;
+                } else if (/[a-z]/.test(ch)) {
+                    types[i] = "lowerLetter";
+                } else if (/[A-Z]/.test(ch)) {
+                    types[i] = "upperLetter";
+                } else {
+                    types[i] = "symbol";
+                }
 
-			(function shuffle(start){
+                letters.push(i);
+            }
+
+            el.html("");
+
+            // Self executing named function expression:
+            if (fwd) {
+				console.log('shuffling');
+                (function shuffle(start){
+				console.log('shuffle')
+                    // This code is run options.fps times per second
+                    // and updates the contents of the page element
+
+                    var i,
+                        len = letters.length,
+                        strCopy = str.slice(0);	// Fresh copy of the string
+
+                    if(start>len){
+
+                        // The animation is complete. Updating the
+                        // flag and triggering the callback;
+
+                        el.data('animated',false);
+                        options.callback(el);
+                        return;
+                    }
+
+                    // All the work gets done here
+                    for(i=Math.max(start,0); i < len; i++){
+
+                        // The start argument and options.step limit
+                        // the characters we will be working on at once
+
+                        if( i < start+options.step){
+                            // Generate a random character at this position
+                            strCopy[letters[i]] = randomChar(types[letters[i]]);
+                        }
+                        else {
+                            strCopy[letters[i]] = "";
+                        }
+                    }
+
+                    el.text(strCopy.join(""));
+                    //  consolelog.html(el);
+
+                    setTimeout(function(){
+
+                        shuffle(start+1);
+
+                    },/*1000);*/ 1000/options.fps);
+
+                })(-options.step);
+
+
+            } else {
+				console.log('deleting');
+                			(function shuffle(start){
 
 				// This code is run options.fps times per second
 				// and updates the contents of the page element
@@ -256,7 +151,8 @@ $(this).on('onWidgetLoad', function (obj) {//This block initializes fields set b
 					len = letters.length,
 					strCopy = str.slice(0);	// Fresh copy of the string
 
-				if(start>len){
+				//if(start>len){
+        		if(start<-options.step){
 
 					// The animation is complete. Updating the
 					// flag and triggering the callback;
@@ -278,197 +174,53 @@ $(this).on('onWidgetLoad', function (obj) {//This block initializes fields set b
 					}
 					else {
 						strCopy[letters[i]] = "";
+
 					}
 				}
 
 				el.text(strCopy.join(""));
-      //  consolelog.html(el);
-
-				setTimeout(function(){
-
-				shuffle(start+1);
-
-      },/*1000);*/ 1000/options.fps);
-
-    })(-options.step);
-
-
-		});
-	};
-
-	function randomChar(type){
-		var pool = "";
-
-		if (type == "lowerLetter"){
-			pool = "abcdefghijklmnopqrstuvwxyz0123456789";
-		}
-		else if (type == "upperLetter"){
-			pool = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-		}
-		else if (type == "symbol"){
-			pool = ",.?/\\(^)![]{}*&^%$#'\"";
-		}
-
-		var arr = pool.split('');
-    //consolelog.html(arr[Math.floor(Math.random()*arr.length)]);
-		return arr[Math.floor(Math.random()*arr.length)];
-	}
-
-})(jQuery);
-
-/**
- * @name		Shuffle Delete
- * @author		Nathan Wisla (modifier)
- * @version 	1.0
- * @url			http://tutorialzine.com/2011/09/shuffle-letters-effect-jquery/
- * @license		MIT License
- */
-
-(function($){
-
-	$.fn.shuffleDelete = function(prop){
-
-		var options = $.extend({
-			"step"		: 8,			// How many times should the letters be changed
-			"fps"		: 25,			// Frames Per Second
-			"text"		: "", 			// Use this text instead of the contents
-			"callback"	: function(){}	// Run once the animation is complete
-		},prop)
-
-		return this.each(function(){
-
-			var el = $(this),
-				str = "";
-
-
-			// Preventing parallel animations using a flag;
-
-			if(el.data('animated')){
-				return true;
-			}
-
-			el.data('animated',true);
-
-
-			if(options.text) {
-				str = options.text.split('');
-			}
-			else {
-				str = el.text().split('');
-			}
-
-			// The types array holds the type for each character;
-			// Letters holds the positions of non-space characters;
-
-			var types = [],
-				letters = [];
-
-			// Looping through all the chars of the string
-
-			for(var i=0;i<str.length;i++){
-
-				var ch = str[i];
-
-				if(ch == " "){
-					types[i] = "space";
-					continue;
-				}
-				else if(/[a-z]/.test(ch)){
-					types[i] = "lowerLetter";
-				}
-				else if(/[A-Z]/.test(ch)){
-					types[i] = "upperLetter";
-				}
-				else {
-					types[i] = "symbol";
-				}
-
-				letters.push(i);
-			}
-
-			el.html("");
-
-			// Self executing named function expression:
-
-			(function shuffle(start){
-
-				// This code is run options.fps times per second
-				// and updates the contents of the page element
-
-				var i,
-					len = letters.length,
-					strCopy = str.slice(0);	// Fresh copy of the string
-
-				//if(start>len){
-        if(start<-options.step){
-
-					// The animation is complete. Updating the
-					// flag and triggering the callback;
-
-					el.data('animated',false);
-					options.callback(el);
-					return;
-				}
-
-				// All the work gets done here
-				for(i=Math.max(start,0); i < len; i++){
-
-					// The start argument and options.step limit
-					// the characters we will be working on at once
-
-					if( i < start+options.step){
-						// Generate a random character at thsi position
-						strCopy[letters[i]] = randomChar(types[letters[i]]);
-            //strCopy[letters[i]] = "";
-					}
-					else {
-						strCopy[letters[i]] = "";
-            //consolelog.html(letters[0]);
-            //strCopy[letters[i]] = randomChar(types[letters[len-i]]);
-					}
-				}
-
-				el.text(strCopy.join(""));
-      //  consolelog.html(el);
 
 				setTimeout(function(){
 
 				shuffle(start-1);
 
-      },/*1000);*/ 1000/options.fps);
+      },1000/options.fps);
 
-    })(letters.length);//(-options.step);
+    })(letters.length);
+            }
+        });
+    };
 
+    function randomChar(type){
+        var pool = "";
 
-		});
-	};
+        if (type == "lowerLetter"){
+            pool = "abcdefghijklmnopqrstuvwxyz0123456789";
+        }
+        else if (type == "upperLetter"){
+            pool = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        }
+        else if (type == "symbol"){
+            pool = ",.?/\\(^)![]{}*&^%$#'\"";
+        }
 
-	function randomChar(type){
-		var pool = "";
-
-		if (type == "lowerLetter"){
-			pool = "abcdefghijklmnopqrstuvwxyz0123456789";
-		}
-		else if (type == "upperLetter"){
-			pool = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-		}
-		else if (type == "symbol"){
-			pool = ",.?/\\(^)![]{}*&^%$#'\"";
-		}
-
-		var arr = pool.split('');
-    //consolelog.html(arr[Math.floor(Math.random()*arr.length)]);
-		return arr[Math.floor(Math.random()*arr.length)];
-	}
+        var arr = pool.split('');
+        //consolelog.html(arr[Math.floor(Math.random()*arr.length)]);
+        return arr[Math.floor(Math.random()*arr.length)];
+    }
 
 })(jQuery);
 
-containers.left.shuffleLetters();
-containers.right.shuffleLetters();
-containers.top.shuffleLetters();
-containers.bottom.shuffleLetters();
 
-function setTransition(color,fillTime,scaleSize,scaleTime) {
+onEvent = function ({type, text, username, delayTime, cheerAmount}) { //cheerAmount will be passed as an arg (if it exists)
+  let color;
+
+  color = sortEvent(type, text, username, delayTime, cheerAmount);
+  setTransition(color,0.5,1.5,0.5);
+}
+
+
+setTransition = function (color,fillTime,scaleSize,scaleTime) {
   glowStyle.css(
     {
       "fill": color ,
@@ -478,50 +230,152 @@ function setTransition(color,fillTime,scaleSize,scaleTime) {
   );
 }
 
-$(".glow-layer-goose").on('transitionend', function() {
-  setTransition(eventLib['default'].color,30,1,5);
-});//reset the glowing animation back to normal
-
-function sortEvent(type,text,username,delayTime){
+sortEvent = function (type, text, username, delayTime, cheerAmount){
 //sort containers on left right top or bottom depending on what event occured
 //left gets sorted by follower,host, raid
 //right gets sorted by subscriber tipper cheer
+
+    let leftContainer = ['follower','host','raid'], //add cheer as a threshold under 50 bits
+        rightContainer = ['subscriber','tip','cheer','redemption'], //add cheer as threshold over 50 bits
+    	color = eventLib.default.color;
+
+    containers.top.shuffleLetters({"text":eventLib[type].text});
+    containers.bottom.shuffleLetters({"text":`${username} • ${text}`});
+
+    color = eventLib[type].color;
+
+    let lr = leftContainer.includes(type) || (rightContainer.includes(type) && cheerAmount < 50) ? 'left' : 'right';
+
+    setTimeout(function (){
+        containers[lr].shuffleLetters();
+        containers.top.shuffleLetters();
+        setTimeout(function(){
+            containers.bottom.shuffleLetters()
+            containers[lr].shuffleLetters({"text":`${username} • ${text}`});
+        },1500);
+    },delayTime*1000);
+    return color;
+    
+}
+
+TwitchEventListener = function (event, listener, delayTime) {
+
+    let
+        eventParams = {
+            type: undefined,
+            text: undefined,
+            username: event.name,
+            delayTime: delayTime,
+            cheerAmount: undefined
+        };
+
+    eventParams.delayTime = delayTime;
+    eventParams.type = listener;
+
+    if (listener === 'follower') {
+        eventParams.text = 'Follower';
+    } else if (listener === 'redemption') {
+        eventParams.text = 'Redeemed';
+    } else if (listener === 'subscriber') {
+
+
+        if (event.amount === 'gift') {
+            eventParams.text = 'Sub gift';
+
+        } else if (event.amount === undefined) {//group 'amount' conditions first
+            eventParams.text = 'Resub';
+
+        } else if (event.subExtension) {
+            eventParams.text = `x${event.amount} Extension`;
+
+        } else if(event.bulkGifted || (!event.isCommunityGift && event.gifted)) {
+            eventParams.text = `Sub x${event.amount}`;
+            eventParams.username = event.sender;
+
+        } else if (!event.isCommunityGift) { //do not update on people who were gifted subscriptions
+            eventParams.text = `Sub x${event.amount}`;
+        }  //No else statement because that will cover bulk gifts and make a long loop
+
+    } else if (listener === 'cheer') {
+        eventParams.text = `x${event.amount.toLocaleString()} Bits`;
+        eventParams.cheerAmount = event.amount;
+
+
+    } else if (listener === 'tip') {
+
+        if (event.amount === parseInt(event.amount)) {
+
+            eventParams.text = event.amount.toLocaleString(userLocale, {
+                style: 'currency',
+                minimumFractionDigits: 0,
+                currency: userCurrency.code
+            });
+
+        } else {
+
+            eventParams.text = event.amount.toLocaleString(userLocale, {
+                style: 'currency',
+                currency: userCurrency.code
+            });
+        }
+
+    } else if (listener === 'raid') {
+
+        eventParams.text = `Raid ${event.amount.toLocaleString()}`;
+
+    } else if (listener === 'host') {
+      
+    	eventParams.text = `Host ${event.amount.toLocaleString()}`;
+      
+    }
+
+    onEvent(eventParams)
+
+}
+
+
+$(".glow-layer-goose").on('transitionend', function() {
+  setTransition(eventLib.default.color,30,1,5);
+});//reset the glowing animation back to normal
+
+$(this).on('onEventReceived', function (obj) { //Event Listener on received event
+    if (!obj.detail.event) {
+      return;
+    }
+    if (typeof obj.detail.event.itemId !== "undefined") {
+        obj.detail.listener = "redemption-latest"
+    }
+    let listener = obj.detail.listener.split("-")[0], //string array separated by '-' goes 'follower-xxxxxxxxx'
+        event = obj.detail.event;//an object datatype
+
+ 	TwitchEventListener(event, listener,delayTime);
+});
+
+$(this).on('onWidgetLoad', function (obj) {//This block initializes fields set by user. Data is collected above first then it is initialized.
+    let data = obj.detail.session.data;
+
+  	let recents = obj.detail.recents;
+    recents.sort(function (a, b) {
+        return - (Date.parse(a.createdAt) - Date.parse(b.createdAt));
+    });
+  	
+  	//Do not declare with var or let, these are global objects
+    userCurrency = obj.detail.currency;
+    fieldData = obj.detail.fieldData;
+    fadeoutTime = fieldData.fadeoutTime;
+    defaultGlow = fieldData.defaultGlow;
+    userLocale = fieldData.locale;
+    direction = fieldData.direction;
   
-  let leftContainer = ['follower','host','raid']
-      rightContainer = ['subscriber','tip','cheer','redemption'];
-      color = eventLib['default'].color;
+  	delayTime = fieldData.delayTime
+    
+    eventLib.default.color = defaultGlow;
+  
 
-      containers.top.shuffleLetters({"text":eventLib[type].text});
-      containers.bottom.shuffleLetters({"text":`${username} • ${text}`});
-      color = eventLib[type].color;
+    for (let eventIndex = 0; eventIndex < recents.length; eventIndex++) {
+      let event = recents[eventIndex],
+          listener = event.type;
 
-  if(leftContainer.includes(type)){
-    setTimeout(function (){
-      containers.left.shuffleDelete();
-      containers.top.shuffleDelete();
-      setTimeout(function(){
-        containers.bottom.shuffleDelete()
-        containers.left.shuffleLetters({"text":`${username} • ${text}`});
-      },1500);
-    },delayTime*1000);
-    return color;
-  }
-
-  if (rightContainer.includes(type)) {
-    setTimeout(function (){
-      containers.right.shuffleDelete();
-      containers.top.shuffleDelete()
-      setTimeout(function(){
-        containers.bottom.shuffleDelete();
-        containers.right.shuffleLetters({"text":`${username} • ${text}`});
-      },1500);
-    },delayTime*1000);
-    return color;
-  }
-}
-
-function onEvent(type, text, username, delayTime) {
-  let color;
-  color = sortEvent(type,text,username, delayTime);
-  setTransition(color,0.5,1.5,0.5);
-}
+      TwitchEventListener(event,listener,2);
+    }
+});
