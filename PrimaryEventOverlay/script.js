@@ -35,7 +35,7 @@ let userLocale = 'en-US',
         var options = $.extend({
             "step"		: 8,			// How many times should the letters be changed
             "fps"		: 25,			// Frames Per Second
-            "text"		: "", 			// Use this text instead of the contents
+            "text"		: '', 			// Use this text instead of the contents
             "callback"	: function(){}	// Run once the animation is complete
         },prop);
 
@@ -50,8 +50,6 @@ let userLocale = 'en-US',
             }
 
             el.data('animated', true);
-
-			console.log(' text',options.text, options.text === ' ');
           
             if (options.text !== '') {
                 fwd = true;
@@ -125,7 +123,6 @@ let userLocale = 'en-US',
                     }
 
                     el.text(strCopy.join(""));
-                    //  consolelog.html(el);
 
                     setTimeout(function(){
 
@@ -198,7 +195,6 @@ let userLocale = 'en-US',
         }
 
         var arr = pool.split('');
-        //consolelog.html(arr[Math.floor(Math.random()*arr.length)]);
         return arr[Math.floor(Math.random()*arr.length)];
     }
 
@@ -222,6 +218,7 @@ setTransition = function (color,fillTime,scaleSize,scaleTime) {
     }
   );
 }
+
 
 sortEvent = function (type, text, username, delayTime, cheerAmount){
 //sort containers on left right top or bottom depending on what event occured
@@ -251,28 +248,24 @@ sortEvent = function (type, text, username, delayTime, cheerAmount){
     
 }
 
-TwitchEventListener = function (event, listener, delayTime) {
 
+TwitchEventListener = function (event, listener, delayTime) {
     let
         eventParams = {
-            type: undefined,
+            type: listener,
             text: undefined,
             username: event.name,
             delayTime: delayTime,
             cheerAmount: undefined
         };
 
-    eventParams.delayTime = delayTime;
-    eventParams.type = listener;
-
     if (listener === 'follower') {
         eventParams.text = 'Follower';
+      
     } else if (listener === 'redemption') {
         eventParams.text = 'Redeemed';
       
     } else if (listener === 'subscriber') {
-
-
         if (event.amount === 'gift') {
             eventParams.text = 'Sub gift';
 
@@ -294,11 +287,8 @@ TwitchEventListener = function (event, listener, delayTime) {
         eventParams.text = `x${event.amount.toLocaleString()} Bits`;
         eventParams.cheerAmount = event.amount;
 
-
     } else if (listener === 'tip') {
-
         if (event.amount === parseInt(event.amount)) {
-
             eventParams.text = event.amount.toLocaleString(userLocale, {
                 style: 'currency',
                 minimumFractionDigits: 0,
@@ -306,7 +296,6 @@ TwitchEventListener = function (event, listener, delayTime) {
             });
 
         } else {
-
             eventParams.text = event.amount.toLocaleString(userLocale, {
                 style: 'currency',
                 currency: userCurrency.code
@@ -314,15 +303,13 @@ TwitchEventListener = function (event, listener, delayTime) {
         }
 
     } else if (listener === 'raid') {
-
         eventParams.text = `Raid ${event.amount.toLocaleString()}`;
-
+      
     } else if (listener === 'host') {
-      
-    	eventParams.text = `Host ${event.amount.toLocaleString()}`;
-      
+    	eventParams.text = `Host ${event.amount.toLocaleString()}`;          
     }
-	if (!event.isCommunityGift){
+  
+	if (!event.isCommunityGift && eventParams.text){
     	onEvent(eventParams)
 	}
 }
@@ -332,6 +319,7 @@ $(".glow-layer-goose").on('transitionend', function() {
   setTransition(eventLib.default.color,30,1,5);
 });//reset the glowing animation back to normal
 
+
 $(this).on('onEventReceived', function (obj) { //Event Listener on received event
     if (!obj.detail.event) {
       return;
@@ -339,11 +327,12 @@ $(this).on('onEventReceived', function (obj) { //Event Listener on received even
     if (typeof obj.detail.event.itemId !== "undefined") {
         obj.detail.listener = "redemption-latest"
     }
-    let listener = obj.detail.listener.split("-")[0], //string array separated by '-' goes 'follower-xxxxxxxxx'
+    let listener = obj.detail.listener.split('-')[0], //string array separated by '-' goes 'follower-xxxxxxxxx'
         event = obj.detail.event;//an object datatype
 
  	TwitchEventListener(event, listener,delayTime);
 });
+
 
 $(this).on('onWidgetLoad', function (obj) {//This block initializes fields set by user. Data is collected above first then it is initialized.
     let data = obj.detail.session.data;
