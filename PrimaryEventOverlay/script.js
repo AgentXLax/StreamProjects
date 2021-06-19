@@ -43,8 +43,6 @@ let userLocale = 'en-US',
             let el = $(this),
                 str = "",
                 fwd;
-
-
             // Preventing parallel animations using a flag;
 
             if (el.data('animated')) {
@@ -93,9 +91,7 @@ let userLocale = 'en-US',
 
             // Self executing named function expression:
             if (fwd) {
-				console.log('shuffling');
                 (function shuffle(start){
-				console.log('shuffle')
                     // This code is run options.fps times per second
                     // and updates the contents of the page element
 
@@ -139,57 +135,54 @@ let userLocale = 'en-US',
 
                 })(-options.step);
 
-
             } else {
-				console.log('deleting');
-                			(function shuffle(start){
+                (function shuffle(start){
+                      // This code is run options.fps times per second
+                      // and updates the contents of the page element
 
-				// This code is run options.fps times per second
-				// and updates the contents of the page element
+                      var i,
+                          len = letters.length,
+                          strCopy = str.slice(0);	// Fresh copy of the string
 
-				var i,
-					len = letters.length,
-					strCopy = str.slice(0);	// Fresh copy of the string
+                      //if(start>len){
+                      if(start<-options.step){
 
-				//if(start>len){
-        		if(start<-options.step){
+                        // The animation is complete. Updating the
+                        // flag and triggering the callback;
 
-					// The animation is complete. Updating the
-					// flag and triggering the callback;
+                        el.data('animated',false);
+                        options.callback(el);
+                        return;
+                      }
 
-					el.data('animated',false);
-					options.callback(el);
-					return;
-				}
+                      // All the work gets done here
+                      for(i=Math.max(start,0); i < len; i++){
 
-				// All the work gets done here
-				for(i=Math.max(start,0); i < len; i++){
+                        // The start argument and options.step limit
+                        // the characters we will be working on at once
 
-					// The start argument and options.step limit
-					// the characters we will be working on at once
+                        if( i < start+options.step){
+                          // Generate a random character at this position
+                          strCopy[letters[i]] = randomChar(types[letters[i]]);
+                        }
+                        else {
+                          strCopy[letters[i]] = "";
 
-					if( i < start+options.step){
-						// Generate a random character at this position
-						strCopy[letters[i]] = randomChar(types[letters[i]]);
-					}
-					else {
-						strCopy[letters[i]] = "";
+                        }
+                      }
 
-					}
-				}
+                      el.text(strCopy.join(""));
 
-				el.text(strCopy.join(""));
+                      setTimeout(function(){
 
-				setTimeout(function(){
+                        shuffle(start-1);
 
-				shuffle(start-1);
+                    },1000/options.fps);
 
-      },1000/options.fps);
-
-    })(letters.length);
+                })(letters.length);
             }
         });
-    };
+    }
 
     function randomChar(type){
         var pool = "";
@@ -276,6 +269,7 @@ TwitchEventListener = function (event, listener, delayTime) {
         eventParams.text = 'Follower';
     } else if (listener === 'redemption') {
         eventParams.text = 'Redeemed';
+      
     } else if (listener === 'subscriber') {
 
 
@@ -289,7 +283,7 @@ TwitchEventListener = function (event, listener, delayTime) {
             eventParams.text = `x${event.amount} Extension`;
 
         } else if(event.bulkGifted || (!event.isCommunityGift && event.gifted)) {
-            eventParams.text = `Sub x${event.amount}`;
+            eventParams.text = `Sub x${event.amount} Gifts`;
             eventParams.username = event.sender;
 
         } else if (!event.isCommunityGift) { //do not update on people who were gifted subscriptions
@@ -328,9 +322,9 @@ TwitchEventListener = function (event, listener, delayTime) {
     	eventParams.text = `Host ${event.amount.toLocaleString()}`;
       
     }
-
-    onEvent(eventParams)
-
+	if (!event.isCommunityGift){
+    	onEvent(eventParams)
+	}
 }
 
 
