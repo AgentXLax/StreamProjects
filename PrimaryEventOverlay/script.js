@@ -6,8 +6,9 @@ let userLocale = 'en-US',
         left : $("#follower-container") ,
         right : $("#train-container") ,
         top : $("#header") ,
-        bottom : $("#footer")
-    } ,
+        bottom : $("#footer"),
+      	message : $("#subfooter")
+    },
     eventLib = {
         'default': {color:'#FFFFFF'} ,
         'follower': {color:'#0270D9' , text:'Follower'} ,
@@ -201,10 +202,10 @@ let userLocale = 'en-US',
 })(jQuery);
 
 
-onEvent = function ({type, text, username, delayTime, cheerAmount}) { //cheerAmount will be passed as an arg (if it exists)
+onEvent = function ({type, text, username, delayTime, message, redemptionType, cheerAmount}) { //cheerAmount will be passed as an arg (if it exists)
   let color;
 
-  color = sortEvent(type, text, username, delayTime, cheerAmount);
+  color = sortEvent(type, text, username, delayTime, message, redemptionType, cheerAmount);
   setTransition(color,0.5,1.5,0.5);
 }
 
@@ -220,27 +221,35 @@ setTransition = function (color,fillTime,scaleSize,scaleTime) {
 }
 
 
-sortEvent = function (type, text, username, delayTime, cheerAmount){
+sortEvent = function (type, text, username, delayTime, message, redemptionType, cheerAmount){
 //sort containers on left right top or bottom depending on what event occured
 //left gets sorted by follower,host, raid
 //right gets sorted by subscriber tipper cheer
 
-    let leftContainer = ['follower','host','raid'], //add cheer as a threshold under 50 bits
-        rightContainer = ['subscriber','tip','cheer','redemption'], //add cheer as threshold over 50 bits
-    	color = eventLib.default.color;
+    let leftContainer = ['follower','host','raid'], //add cheer as a threshold under 50 bits, redemption as "effect"
+        rightContainer = ['subscriber','tip','cheer','redemption'], //add cheer as threshold over 50 bits, other redemptions
+    	color = eventLib.default.color,
+        msg = $(containers.message),
+        lCheck = leftContainer.includes(type) || 
+        					rightContainer.includes(type) && cheerAmount < 50 || 
+        					rightContainer.includes(type) && redemptionType === 'effect';
 
     containers.top.shuffleLetters({"text":eventLib[type].text});
     containers.bottom.shuffleLetters({"text":`${username} • ${text}`});
+  	msg.html(message);
+  	msg.fadeIn();
 
     color = eventLib[type].color;
 
-    let lr = leftContainer.includes(type) || (rightContainer.includes(type) && cheerAmount < 50) ? 'left' : 'right';
+    let lr = lCheck ? 'left' : 'right';
 
     setTimeout(function (){
         containers[lr].shuffleLetters();
         containers.top.shuffleLetters();
-        setTimeout(function(){
-            containers.bottom.shuffleLetters()
+        setTimeout(function (){
+            containers.bottom.shuffleLetters();
+          	msg.fadeOut();
+          	msg.html('');
             containers[lr].shuffleLetters({"text":`${username} • ${text}`});
         },1500);
     },delayTime*1000);
@@ -256,6 +265,8 @@ TwitchEventListener = function (event, listener, delayTime) {
             text: undefined,
             username: event.name,
             delayTime: delayTime,
+            message: listener !== 'cheer' ? event.message : undefined,
+            redemptionType: undefined,
             cheerAmount: undefined
         };
 
@@ -263,7 +274,8 @@ TwitchEventListener = function (event, listener, delayTime) {
         eventParams.text = 'Follower';
       
     } else if (listener === 'redemption') {
-        eventParams.text = 'Redeemed';
+      	eventParams.redemptionType = event.type;
+        eventParams.text = `${event.item}`;        
       
     } else if (listener === 'subscriber') {
         if (event.amount === 'gift') {
@@ -342,19 +354,16 @@ $(this).on('onWidgetLoad', function (obj) {//This block initializes fields set b
         return - (Date.parse(a.createdAt) - Date.parse(b.createdAt));
     });
   	
-  	//Do not declare with var or let, these are global objects
+  	//Do not declare with var or let, these are global object variables
     userCurrency = obj.detail.currency;
     fieldData = obj.detail.fieldData;
     fadeoutTime = fieldData.fadeoutTime;
     defaultGlow = fieldData.defaultGlow;
     userLocale = fieldData.locale;
-    direction = fieldData.direction;
-  
+    direction = fieldData.direction;  
   	delayTime = fieldData.delayTime
-    
     eventLib.default.color = defaultGlow;
   
-
     for (let eventIndex = 0; eventIndex < recents.length; eventIndex++) {
       let event = recents[eventIndex],
           listener = event.type;
