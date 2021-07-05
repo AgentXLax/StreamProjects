@@ -14,6 +14,11 @@
     "label": "Goose end of animation color",
     "value": "#FFFFFF"
   },  
+  "gooseAnimSpeed": {
+    "type": "number",
+    "label": "Speed of goose color transition",
+    "value": 30
+  },
   "defaultGlow": {
     "type": "colorpicker",
     "label": "Default color of glowing background",
@@ -24,30 +29,20 @@
     "label": "Font color",
     "value": "#FFFFFF"
   },
+  "fontBorderColor": {
+    "type": "colorpicker",
+    "label": "Font border color",
+    "value": "#FFFFFF"
+  },
+    "fontBorderWeight": {
+  	"type": "number",
+    "label": "Thickness of font border",
+    "value": 1
+  },
   "fontSize": {
     "type": "number",
     "label": "Side Text Font Size",
-    "value": 18
-  },
-  "headerColor": {
-    "type": "colorpicker",
-    "label": "Header font color",
-    "value": "#FFFFFF"
-  },
-  "headerFontSize": {
-    "type": "number",
-    "label": "Header font size",
-    "value": 42
-  },
-  "footerColor": {
-    "type": "colorpicker",
-    "label": "Footer font color",
-    "value": "#FFFFFF"
-  },
-  "footerFontSize": {
-    "type": "number",
-    "label": "Footer font size",
-    "value": 36
+    "value": 32
   },
   "delayTime": {
     "type": "number",
@@ -71,71 +66,6 @@
       "yes": "Yes",
       "no": "No"
     }
-  },
-  "includeHosts": {
-    "type": "dropdown",
-    "label": "Display hosts:",
-    "value": "yes",
-    "options": {
-      "yes": "Yes",
-      "no": "No"
-    }
-  },
-  "minHost": {
-    "type": "number",
-    "label": "Minimum amount of hosting viewers:",
-    "value": 1
-  },
-  "includeRaids": {
-    "type": "dropdown",
-    "label": "Display raids:",
-    "value": "yes",
-    "options": {
-      "yes": "Yes",
-      "no": "No"
-    }
-  },
-  "minRaid": {
-    "type": "number",
-    "label": "Minimum amount of raiding viewers:",
-    "value": 1
-  },
-  "includeSubs": {
-    "type": "dropdown",
-    "label": "Display subscribers:",
-    "value": "yes",
-    "options": {
-      "yes": "Yes",
-      "no": "No"
-    }
-  },
-  "includeTips": {
-    "type": "dropdown",
-    "label": "Display tips:",
-    "value": "yes",
-    "options": {
-      "yes": "Yes",
-      "no": "No"
-    }
-  },
-  "minTip": {
-    "type": "number",
-    "label": "Minimum amount of tip:",
-    "value": 1
-  },
-  "includeCheers": {
-    "type": "dropdown",
-    "label": "Display cheers:",
-    "value": "yes",
-    "options": {
-      "yes": "Yes",
-      "no": "No"
-    }
-  },
-  "minCheer": {
-    "type": "number",
-    "label": "Minimum amount of bits in Cheer:",
-    "value": 1
   },
   
   "locale": {
