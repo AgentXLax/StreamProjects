@@ -1,78 +1,100 @@
+:root{
+    --fontFamily: {{fontFamily}};
+    --fontColor: {{fontColor}};
+    --fontBorderColor: {{fontBorderColor}};
+    --fontBorderWeight: {{fontBorderWeight}}px;
+
+    --fontSize: {{fontSize}}px;
+
+    --gooseAnimSpeed: {{gooseAnimSpeed}};
+    --gooseColor: {{gooseColor}};
+    --gooseAnimColor: {{gooseAnimColor}};
+}
+
 * {
-    font-family: {{fontFamily}};
-    color: {{fontColor}};
-    font-size: 14px;
-   	/*text-shadow: 2px 1px 3px #ffffff;*/
-    text-shadow: -1px 0 #ffffff, 0 1px #ffffff, 1px 0 #ffffff, 0 -1px #ffffff;
+    font-family: var(--fontFamily);
+    color: var(--fontColor);
+    text-align: center;
+    font-size: var(--fontSize);
+    text-shadow: -1px 0 var(--fontBorderColor), 0 1px var(--fontBorderColor), 1px 0 var(--fontBorderColor), 0 -1px var(--fontBorderColor);
 }
 
 .main-container {
-  display: grid;
-  justify-content: stretch;
-  grid-template-areas:
-  "header header header"
-  "left center right"
-  "footer footer footer" ;
-  grid-template-columns: 2fr 200px 2fr;
-  grid-template-rows: 42px 1fr 1fr;
+    display: grid;
+    justify-content: stretch;
+    grid-template-areas:
+          "header header header"
+          "left center right"
+          "footer footer footer"
+          "subfooter subfooter subfooter";
+    grid-template-columns: 2fr 200px 2fr;
+    grid-template-rows: 42px 1fr 1fr;
 }
 
 .header-text {
-  text-align: center;
-  align-self: center;
-  color: {{headerColor}};
-  font-size: {{headerFontSize}}px;
-  grid-area: header;
+    align-self: center;
+    font-size: 1.125rem;
+    grid-area: header;
 }
 
-.footer-text{
-  text-align: center;
-  align-self: start;
-  color: {{footerColor}};
-  font-size: {{footerFontSize}}px;
-  grid-area: footer;
+.footer-text {
+    align-self: start;
+    font-size: 1.125rem;
+    grid-area: footer;
+}
+
+.message-text {
+    grid-area: subfooter;
+    font-size: 0.7rem;
 }
 
 .follower-container, .train-container {
-  font-size: {{fontSize}}px;
-  place-self: center stretch;
+    font-size: 1rem;
+    place-self: center stretch;
 }
 
 .follower-container {
-  text-align: right;
-  grid-area: left;
+    text-align: right;
+    grid-area: left;
 }
 
 .train-container {
-  text-align: left;
-  grid-area: right;
+    text-align: left;
+    grid-area: right;
 }
 
 .goose-container {
-  grid-area: center;
-  display: grid;
+    grid-area: center;
+    display: grid;
 }
 
 .top-layer-goose {
-  fill: {{gooseColor}};
-  grid-column: 1;
-  grid-row: 1;
-  z-index:2;
-  animation: color-flow 30s infinite alternate;
+    fill: var(--gooseColor);
+    grid-column: 1;
+    grid-row: 1;
+    z-index: 2;
+    animation: color-flow var(--gooseAnimSpeed) infinite /*alternate*/;
 }
 
 .glow-layer-goose {
-  fill: #ffffff;
-  grid-column: 1;
-  grid-row: 1;
-  z-index: 1;
-  filter: blur(5px);
-  opacity:1;
-  transform:scale(1);
-  transition: fill 0s, width: 0s;
+    fill: #ffffff;
+    grid-column: 1;
+    grid-row: 1;
+    z-index: 1;
+    filter: blur(5px);
+    opacity: 1;
+    transform: scale(1);
+    transition: fill 0s, width 0s;
 }
 
 @keyframes color-flow {
-  0% {fill:{{gooseColor}}}
-  100% {fill:{{gooseAnimColor}}}
+    0% {
+        fill: var(--gooseColor)
+    }
+    50% {
+        fill: var(--gooseAnimColor)
+    }
+    100% {
+        fill: var(--gooseColor)
+    }
 }
