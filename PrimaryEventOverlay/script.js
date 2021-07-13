@@ -55,6 +55,7 @@ let gameColorOverride = function (props) {
     '--gooseAnimColor':props.primaryAnim,
     '--defaultGlow':props.defaultGlow
   });
+  defaultGlow = props.defaultGlow;
 };
 
 
@@ -402,7 +403,8 @@ $(this).on('onWidgetLoad', async function (obj) {//This block initializes fields
   	//Do not declare with var or let, these are global object variables
     userCurrency = obj.detail.currency;
     fieldData = obj.detail.fieldData;
-
+    defaultGlow = fieldData.defaultGlow;
+  
     let gameProps = await findProperties(fieldData.gameName);
   
   	if (gameProps){
@@ -411,7 +413,7 @@ $(this).on('onWidgetLoad', async function (obj) {//This block initializes fields
       gameColorOverride(gameProps);
     }
   	
-    defaultGlow = fieldData.defaultGlow;
+
    	userLocale = fieldData.locale;
     delayTime = fieldData.delayTime;
 
