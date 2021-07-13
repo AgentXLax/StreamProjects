@@ -7,7 +7,7 @@ let userLocale = 'en-US',
         right : $("#train-container") ,
         top : $("#header") ,
         bottom : $("#footer"),
-      	message : $("#subfooter")
+        message : $("#subfooter")
     },
     eventLib = {
         'default': {color:'#FFFFFF'} ,
@@ -19,7 +19,7 @@ let userLocale = 'en-US',
         'host': {color:'#FCED21' , text:'Host'} ,
         'raid': {color:'#BC48D9' , text:'Raid'}
     };
-	
+
 
 /**
  * @name		Shuffle Letters
@@ -51,7 +51,7 @@ let userLocale = 'en-US',
             }
 
             el.data('animated', true);
-          
+
             if (options.text !== '') {
                 fwd = true;
                 str = options.text.split('');
@@ -135,15 +135,15 @@ let userLocale = 'en-US',
 
             } else {
                 (function shuffle(start){
-                      // This code is run options.fps times per second
-                      // and updates the contents of the page element
+                    // This code is run options.fps times per second
+                    // and updates the contents of the page element
 
-                      var i,
-                          len = letters.length,
-                          strCopy = str.slice(0);	// Fresh copy of the string
+                    var i,
+                        len = letters.length,
+                        strCopy = str.slice(0);	// Fresh copy of the string
 
-                      //if(start>len){
-                      if(start<-options.step){
+                    //if(start>len){
+                    if(start<-options.step){
 
                         // The animation is complete. Updating the
                         // flag and triggering the callback;
@@ -151,27 +151,27 @@ let userLocale = 'en-US',
                         el.data('animated',false);
                         options.callback(el);
                         return;
-                      }
+                    }
 
-                      // All the work gets done here
-                      for(i=Math.max(start,0); i < len; i++){
+                    // All the work gets done here
+                    for(i=Math.max(start,0); i < len; i++){
 
                         // The start argument and options.step limit
                         // the characters we will be working on at once
 
                         if( i < start+options.step){
-                          // Generate a random character at this position
-                          strCopy[letters[i]] = randomChar(types[letters[i]]);
+                            // Generate a random character at this position
+                            strCopy[letters[i]] = randomChar(types[letters[i]]);
                         }
                         else {
-                          strCopy[letters[i]] = "";
+                            strCopy[letters[i]] = "";
 
                         }
-                      }
+                    }
 
-                      el.text(strCopy.join(""));
+                    el.text(strCopy.join(""));
 
-                      setTimeout(function(){
+                    setTimeout(function(){
 
                         shuffle(start-1);
 
@@ -203,58 +203,66 @@ let userLocale = 'en-US',
 
 
 onEvent = function ({type, text, username, delayTime, message, redemptionType, cheerAmount}) { //cheerAmount will be passed as an arg (if it exists)
-  let color;
+    let color;
 
-  color = sortEvent(type, text, username, delayTime, message, redemptionType, cheerAmount);
-  setTransition(color,0.5,1.5,0.5);
+    color = sortEvent(type, text, username, delayTime, message, redemptionType, cheerAmount);
+    setTransition(color,0.5,1.5,0.5);
 }
 
 
 setTransition = function (color,fillTime,scaleSize,scaleTime) {
-  glowStyle.css(
-    {
-      "fill": color ,
-      "transform": `scale(${scaleSize})` ,
-      "transition": `fill ${fillTime}s , transform ${scaleTime}s`
-    }
-  );
+    glowStyle.css(
+        {
+            "fill": color ,
+            "transform": `scale(${scaleSize})` ,
+            "transition": `fill ${fillTime}s , transform ${scaleTime}s`
+        }
+    );
 }
 
 
-sortEvent = function (type, text, username, delayTime, message, redemptionType, cheerAmount){
+sortEvent = function (type, text, username, delayTime, message, redemptionType, cheerAmount) {
 //sort containers on left right top or bottom depending on what event occured
 //left gets sorted by follower,host, raid
 //right gets sorted by subscriber tipper cheer
 
     let leftContainer = ['follower','host','raid'], //add cheer as a threshold under 50 bits, redemption as "effect"
         rightContainer = ['subscriber','tip','cheer','redemption'], //add cheer as threshold over 50 bits, other redemptions
-    	color = eventLib.default.color,
+        color = eventLib.default.color,
         msg = $(containers.message),
-        lCheck = leftContainer.includes(type) || 
-        					rightContainer.includes(type) && cheerAmount < 50 || 
-        					rightContainer.includes(type) && redemptionType === 'effect';
+        lCheck = leftContainer.includes(type) ||
+            rightContainer.includes(type) && cheerAmount < 50 ||
+            rightContainer.includes(type) && redemptionType === 'effect',
+        unworthyEvents = rightContainer.includes(type) && redemptionType === 'effect';
 
-    containers.top.shuffleLetters({"text":eventLib[type].text});
+    if (!unworthyEvents) containers.top.shuffleLetters({"text":eventLib[type].text});
+
     containers.bottom.shuffleLetters({"text":`${username} • ${text}`});
-  	msg.html(message);
-  	msg.fadeIn();
+    msg.html(message);
+    msg.fadeIn();
 
     color = eventLib[type].color;
+
 
     let lr = lCheck ? 'left' : 'right';
 
     setTimeout(function (){
-        containers[lr].shuffleLetters();
+
+        if (!unworthyEvents) containers[lr].shuffleLetters();
+
         containers.top.shuffleLetters();
-        setTimeout(function (){
+
+        setTimeout(function () {
             containers.bottom.shuffleLetters();
-          	msg.fadeOut();
-          	msg.html('');
-            containers[lr].shuffleLetters({"text":`${username} • ${text}`});
+            msg.fadeOut(1000,'swing',()=>msg.html(''));
+
+            if(!unworthyEvents) containers[lr].shuffleLetters({"text":`${username} • ${text}`});
+
         },1500);
     },delayTime*1000);
+
     return color;
-    
+
 }
 
 
@@ -272,11 +280,11 @@ TwitchEventListener = function (event, listener, delayTime) {
 
     if (listener === 'follower') {
         eventParams.text = 'Follower';
-      
+
     } else if (listener === 'redemption') {
-      	eventParams.redemptionType = event.type;
-        eventParams.text = `${event.item}`;        
-      
+        eventParams.redemptionType = event.type;
+        eventParams.text = `${event.item}`;
+
     } else if (listener === 'subscriber') {
         if (event.amount === 'gift') {
             eventParams.text = 'Sub gift';
@@ -316,25 +324,23 @@ TwitchEventListener = function (event, listener, delayTime) {
 
     } else if (listener === 'raid') {
         eventParams.text = `Raid ${event.amount.toLocaleString()}`;
-      
-    } else if (listener === 'host') {
-    	eventParams.text = `Host ${event.amount.toLocaleString()}`;          
+
     }
-  
-	if (!event.isCommunityGift && eventParams.text){
-    	onEvent(eventParams)
-	}
+
+    if (!event.isCommunityGift && eventParams.text){
+        onEvent(eventParams)
+    }
 }
 
 
 $(".glow-layer-goose").on('transitionend', function() {
-  setTransition(eventLib.default.color,30,1,5);
+    setTransition(eventLib.default.color,30,1,5);
 });//reset the glowing animation back to normal
 
 
 $(this).on('onEventReceived', function (obj) { //Event Listener on received event
     if (!obj.detail.event) {
-      return;
+        return;
     }
     if (typeof obj.detail.event.itemId !== "undefined") {
         obj.detail.listener = "redemption-latest"
@@ -342,32 +348,32 @@ $(this).on('onEventReceived', function (obj) { //Event Listener on received even
     let listener = obj.detail.listener.split('-')[0], //string array separated by '-' goes 'follower-xxxxxxxxx'
         event = obj.detail.event;//an object datatype
 
- 	TwitchEventListener(event, listener,delayTime);
+    TwitchEventListener(event, listener, delayTime);
 });
 
 
 $(this).on('onWidgetLoad', function (obj) {//This block initializes fields set by user. Data is collected above first then it is initialized.
     let data = obj.detail.session.data;
 
-  	let recents = obj.detail.recents;
+    let recents = obj.detail.recents;
     recents.sort(function (a, b) {
         return - (Date.parse(a.createdAt) - Date.parse(b.createdAt));
     });
-  	
-  	//Do not declare with var or let, these are global object variables
+
+    //Do not declare with var or let, these are global object variables
     userCurrency = obj.detail.currency;
     fieldData = obj.detail.fieldData;
     fadeoutTime = fieldData.fadeoutTime;
     defaultGlow = fieldData.defaultGlow;
     userLocale = fieldData.locale;
-    direction = fieldData.direction;  
-  	delayTime = fieldData.delayTime
+    direction = fieldData.direction;
+    delayTime = fieldData.delayTime
     eventLib.default.color = defaultGlow;
-  
-    for (let eventIndex = 0; eventIndex < recents.length; eventIndex++) {
-      let event = recents[eventIndex],
-          listener = event.type;
 
-      TwitchEventListener(event,listener,2);
+    for (let eventIndex = 0; eventIndex < recents.length; eventIndex++) {
+        let event = recents[eventIndex],
+            listener = event.type;
+
+        TwitchEventListener(event,listener,2);
     }
 });
