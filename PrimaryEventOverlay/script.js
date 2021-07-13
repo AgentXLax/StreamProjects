@@ -42,18 +42,10 @@ let findProperties = async function (gameTitle) {
 
         }
     }
-
     return Promise.resolve('game not found!')
-
 };
 
-
-
-let gameColorOverride = function (props) {
-  let text = $('*'),
-      frontGoose = $('#main'),
-      backGoose = $('#glow');
-      
+let gameColorOverride = function (props) {    
   $('*').css({
     '--fontFamily':props.font,
     '--fontColor':props.fontColor,   
@@ -63,16 +55,6 @@ let gameColorOverride = function (props) {
     '--gooseAnimColor':props.primaryAnim,
     '--defaultGlow':props.defaultGlow
   });
-  
-/*  backGoose.css({
-    fill:props.defaultGlow
-  });
-  
-  text.css({
-    'font-family':props.font,
-    color:props.fontColor
-  });
-  */
 };
 
 
@@ -417,13 +399,9 @@ $(this).on('onWidgetLoad', async function (obj) {//This block initializes fields
         return - (Date.parse(a.createdAt) - Date.parse(b.createdAt));
     });
   
-
-  	
-  	
   	//Do not declare with var or let, these are global object variables
     userCurrency = obj.detail.currency;
     fieldData = obj.detail.fieldData;
-  
 
     let gameProps = await findProperties(fieldData.gameName);
   
