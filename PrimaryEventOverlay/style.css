@@ -6,7 +6,7 @@
 
     --fontSize: {{fontSize}}px;
 
-    --gooseAnimSpeed: {{gooseAnimSpeed}};
+    --gooseAnimSpeed: {{gooseAnimSpeed}}s;
     --gooseColor: {{gooseColor}};
     --gooseAnimColor: {{gooseAnimColor}};
   
