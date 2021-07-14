@@ -42,14 +42,16 @@ let findProperties = async function (gameTitle) {
 
         }
     }
-    return Promise.resolve('game not found!')
+    return Promise.resolve(false)
 };
 
-let gameColorOverride = function (props) {    
-  $('*').css({
+
+let gameColorOverride = function (props) {
+  $(':root').css({
     '--fontFamily':props.font,
     '--fontColor':props.fontColor,   
     '--fontBorderColor':props.fontBorderColor,
+    '--fontSize':`${props.fontSize}px`,
     
     '--gooseColor':props.primary,
     '--gooseAnimColor':props.primaryAnim,
@@ -408,8 +410,6 @@ $(this).on('onWidgetLoad', async function (obj) {//This block initializes fields
     let gameProps = await findProperties(fieldData.gameName);
   
   	if (gameProps){
-
-      console.log(gameProps);
       gameColorOverride(gameProps);
     }
   	
